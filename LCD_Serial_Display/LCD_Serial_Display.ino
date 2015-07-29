@@ -2,19 +2,19 @@
 #include <Time.h>
 
 
-LiquidCrystal lcd(8, 9, 4, 5, 6, 7); 
+LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
 
 #define MESSAGE_HEADER 'M' //Text message header
 #define MESSAGE_LENGTH 17
 
 #define TIME_HEADER 'T' //Time header
-#define TIME_LENGTH 10
+#define TIME_LENGTH 11
 
 void setup() {
 	Serial.begin(9600);
 
-	lcd.begin(16, 2); 
+	lcd.begin(16, 2);
 	lcd.setCursor(0,0);
 	lcd.print("Waiting...");
 }
@@ -24,7 +24,7 @@ void loop() {
 	lcd.print(getFormatedTime());
 
 	if (Serial.available()){
-  		processSyncMessage();
+		processSyncMessage();
 	}
 }
 
@@ -46,22 +46,32 @@ void processSyncMessage(){
 		}
 		else if (id == 'T'){
 			Serial.println("I got a time!");
+			String inTime;
+			for(int i=0; i < TIME_LENGTH-1; i++){
+				inTime += String(char(Serial.read()));
+			}
+			Serial.println("Here's the time: " + inTime);
+			setTime(inTime.toInt());
+			lcd.setCursor(0,0);
+			lcd.print("Time is set!");
 		}
 	}
 }
 
 String getFormatedTime(){
-  String hours = formatTimeDigits(hour());
-  String minutes = formatTimeDigits(minute());
-  String seconds = formatTimeDigits(second());
-  return hours + ":" + minutes + ":" + seconds; 
+	String hours = formatTimeDigits(hour());
+	String minutes = formatTimeDigits(minute());
+	String seconds = formatTimeDigits(second());
+	String months = monthShortStr(month());
+	String days = formatTimeDigits(day());
+	return months + " " + days + " " + hours + ":" + minutes + ":" + seconds; 
 }
 
 String formatTimeDigits(int digits){
   // add a zero on to the front if less than 9
   String output;
   if (digits < 10){
-    output += "0";
+  	output += "0";
   }
   output += digits;
   return output;
