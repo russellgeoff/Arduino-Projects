@@ -1,5 +1,6 @@
 #include <LiquidCrystal.h>
 #include <Time.h>
+#include <Timezone.h>
 
 
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
